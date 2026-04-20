@@ -13,7 +13,7 @@ This repository provides a production-ready implementation of a Graph Attention 
 - Utilities for handling tampered/untampered data
 - Modular, extensible codebase
 
--## How Are Payloads Embedded in Neural Networks?
+## How Are Payloads Embedded in Neural Networks?
 
 Steganographic payloads can be embedded in neural networks by subtly modifying the model's parameters, activations, or training data in a way that is difficult to detect but encodes hidden information. This can be achieved through:
 
