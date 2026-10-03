@@ -1,163 +1,171 @@
+<p align="center">
+  <img src="assets/hero.svg" alt="GAT-Based Steganographic Payload Detection in Neural Networks: up to 97 percent detection accuracy" width="100%">
+</p>
 
-# GAT-Based Steganographic Payload Detection in Neural Networks
+<p align="center">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.7%2B-3776AB?style=for-the-badge&logo=python&logoColor=white">
+  <img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-GAT-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white">
+  <img alt="Detection accuracy" src="https://img.shields.io/badge/accuracy-up%20to%2097%25-a855f7?style=for-the-badge">
+  <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-16a34a?style=for-the-badge">
+</p>
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Python](https://img.shields.io/badge/Python-3.7%2B-blue)
-![PyTorch](https://img.shields.io/badge/PyTorch-1.7%2B-red)
+<p align="center">
+  <img alt="60+ CNNs" src="https://img.shields.io/badge/trained%20CNNs-60%2B-0891b2?style=flat-square">
+  <img alt="22 features" src="https://img.shields.io/badge/byte--level%20features-22-d97706?style=flat-square">
+  <img alt="CIFAR-10" src="https://img.shields.io/badge/dataset-CIFAR--10-475569?style=flat-square">
+</p>
 
+<p align="center">
+  <b><a href="#-the-idea">Idea</a> · <a href="#-results-at-a-glance">Results</a> · <a href="#-how-it-works">How it works</a> · <a href="#-quick-start">Quick start</a> · <a href="#-example-results">Plots</a> · <a href="#-threat-background">Threat background</a> · <a href="#-limitations">Limitations</a></b>
+</p>
 
-## Overview
-This repository provides a production-ready implementation of a Graph Attention Network (GAT) for detecting steganographic payloads in neural networks, specifically targeting the CIFAR-10 dataset. It includes:
-- End-to-end training and evaluation scripts
-- Pretrained model weights
-- Utilities for handling tampered/untampered data
-- Modular, extensible codebase
+> **Can you spot malware hiding inside a neural network?** This project trains a Graph Attention Network (GAT) to tell clean models from models whose weights have been tampered with to carry a hidden payload, reaching **up to 97% detection accuracy** across different embedding rates.
 
-## How Are Payloads Embedded in Neural Networks?
+---
 
-Steganographic payloads can be embedded in neural networks by subtly modifying the model's parameters, activations, or training data in a way that is difficult to detect but encodes hidden information. This can be achieved through:
+## 💡 The idea
 
-- **Weight Perturbation:** Slightly altering the weights of a trained model to encode bits of information, while maintaining the model's original performance.
-- **Data Poisoning:** Injecting specially crafted samples into the training data so that the model learns to respond to certain triggers or encodes information in its parameters.
-- **Activation Manipulation:** Training the model so that specific input patterns produce outputs or activations that can be interpreted as hidden messages.
+Pretrained models are shared, downloaded, and deployed constantly, and they are just files full of numbers. That makes them a convenient hiding place. An attacker can nudge a model's weights to smuggle bits of a payload while the model keeps classifying images normally, so standard accuracy checks never notice.
 
-Such payloads are often imperceptible to standard evaluation metrics but can be extracted by an adversary with knowledge of the embedding method. This project aims to detect such hidden payloads using advanced graph-based neural network analysis.
+This repository explores the defensive side: **can we detect that smuggling by looking at the weights themselves?** To find out, it builds a labelled collection of clean and tampered CNNs, summarizes each with byte-level statistics, and trains a GAT to separate the two.
 
-## Table of Contents
-- [Project Structure](#project-structure)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Dataset](#dataset)
-- [Training](#training)
-- [Evaluation](#evaluation)
-- [Pretrained Models](#pretrained-models)
-- [Results](#results)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
+## 📈 Results at a glance
 
-## Project Structure
-```
-<root>
-├── cnn_copy.py                # Main CNN model code
-├── best_gnn.pth               # Best GNN model weights
-├── best_node_gnn.pth          # Best node-level GNN weights
-├── cnn_seed_*.pth             # Various trained CNN model weights
-├── cnn_seed_*_labels.npy      # Tampered/untampered label files
-├── batches.meta               # CIFAR-10 metadata
-├── ...                        # Additional scripts and data
-```
+| | |
+| --- | --- |
+| 🎯 **Detection accuracy** | **up to 97%** across varying embedding rates |
+| 🧠 **Models trained** | **60+** CNNs on CIFAR-10 |
+| 🔬 **Features** | **22** byte-level statistical features |
+| 🕸️ **Classifier** | Graph Attention Network (GAT) in PyTorch |
 
-## Features
-- Graph Attention Network (GAT) for steganographic payload detection
-- Support for tampered and untampered datasets
-- Pretrained model weights for quick evaluation
-- Scripts for training, evaluation, and data processing
-- Modular code for easy extension
+## 🔧 How it works
 
-## Installation
-1. **Clone the repository:**
-  ```bash
-  git clone https://github.com/YugRokadia/GAT-Based-Steganographic-Payload-Detection-in-Neural-Networks.git
-  cd GAT-Based-Steganographic-Payload-Detection-in-Neural-Networks
-  ```
-2. **(Recommended) Create and activate a virtual environment:**
-  - On Linux/macOS:
-    ```bash
-    python -m venv venv
-    source venv/bin/activate
-    ```
-  - On Windows:
-    ```bash
-    python -m venv venv
-    venv\Scripts\activate
-    ```
-3. **Install dependencies:**
-  ```bash
-  pip install -r requirements.txt
-  ```
+<p align="center">
+  <img src="assets/pipeline.svg" alt="Pipeline: CIFAR-10, 60 plus CNNs, payload injection, 22 byte-level features, a Graph Attention Network, and a clean or tampered verdict" width="100%">
+</p>
 
-## Usage
+1. **Train** a population of 60+ CNNs on CIFAR-10 (`cnn.py`).
+2. **Tamper**: inject payloads into the weights of selected models at different embedding rates (`tamper_v6.py`).
+3. **Extract** 22 byte-level statistical features from the weights (`extract_v5.py`).
+4. **Detect**: train the Graph Attention Network to label each model clean or tampered (`train_gnn_final.py`).
 
-### Train a Model
+### Building the dataset
+
+<p align="center">
+  <img src="assets/dataset.svg" alt="Each trained CNN is kept clean or has a payload injected into its weights at a chosen embedding rate, then summarized by 22 byte-level features" width="100%">
+</p>
+
+The **embedding rate** controls how much payload is hidden in a model. Testing across several rates matters because a detector that only catches heavy tampering is not much use in practice.
+
+## 🖼️ Example results
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="image.png" alt="Training and validation accuracy curves"><br><sub><b>Training and validation accuracy</b></sub></td>
+    <td align="center" width="50%"><img src="image-1.png" alt="Confusion matrix for model predictions"><br><sub><b>Confusion matrix</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="image-2.png" alt="ROC curve for payload detection"><br><sub><b>ROC curve</b></sub></td>
+    <td align="center"><img src="image-4.png" alt="Feature visualization of learned representations"><br><sub><b>Learned representations</b></sub></td>
+  </tr>
+</table>
+
+## ⚡ Quick start
+
 ```bash
-python cnn_copy.py --train --epochs 50 --batch-size 128
+# 1. Clone
+git clone https://github.com/YugRokadia/GAT-Based-Steganographic-Payload-Detection-in-Neural-Networks.git
+cd GAT-Based-Steganographic-Payload-Detection-in-Neural-Networks
+
+# 2. Create an environment
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
 ```
 
-### Evaluate a Model
+Download [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) and place it in `cifar-10-batches-py/` (or adjust the path at the top of the scripts).
+
+### Run the pipeline
+
 ```bash
-python cnn_copy.py --eval --weights best_gnn.pth
+python cnn.py               # 1. train the CNN population
+python tamper_v6.py         # 2. inject payloads into selected models
+python extract_v5.py        # 3. extract the 22 byte-level features
+python train_gnn_final.py   # 4. train and evaluate the GAT
 ```
 
-### Custom Scripts
-Refer to the comments and docstrings in each script for additional options and usage details.
+Script options and paths are documented at the top of each file.
 
-## Dataset
-- Uses the [CIFAR-10 dataset](https://www.cs.toronto.edu/~kriz/cifar.html), with additional tampered and untampered label files.
-- Place CIFAR-10 data in the `cifar-10-batches-py` directory (or as specified in scripts).
-- Tampered label files follow the pattern: `*_full_tampered_labels.npy` and `*_partial_tampered_labels.npy`.
+## 📁 Project structure
 
-## Training
-- Scripts are provided for both CNN and GAT models.
-- Specify different seeds and tampering levels via command-line arguments.
-
-Example:
-```bash
-python cnn_copy.py --train --seed 1357 --tampered full
+```
+.
+├── cnn.py                 # Train the CNN population on CIFAR-10
+├── cnn_copy.py            # Working copy / variant of the CNN script
+├── tamper_v6.py           # Inject payloads into model weights
+├── extract_v5.py          # Extract the 22 byte-level features
+├── train_gnn_final.py     # Train and evaluate the Graph Attention Network
+├── image*.png             # Result plots used in this README
+├── requirements.txt       # Python dependencies
+└── LICENSE                # MIT
 ```
 
-## Evaluation
-- Evaluate models using the provided weights and scripts.
+## 🛡️ Threat background
 
-Example:
-```bash
-python cnn_copy.py --eval --weights cnn_seed_1357_full_tampered.pth
-```
+Steganographic payloads can be embedded in neural networks in several ways:
 
-## Pretrained Models
-- Pretrained weights for various seeds and tampering levels are included.
-- Use these for quick evaluation or as a starting point for transfer learning.
+| Technique | How it works |
+| --- | --- |
+| **Weight perturbation** | Slightly alter trained weights to encode bits while preserving the model's accuracy |
+| **Data poisoning** | Train on crafted samples so the model learns to respond to hidden triggers |
+| **Activation manipulation** | Train so that specific inputs produce outputs that decode as a hidden message |
 
-## Results
-- Results and metrics (accuracy, loss, etc.) are printed to the console.
-- For detailed results, refer to output files or logs generated by the scripts.
+This project focuses on **weight-level tampering**, the case where the evidence lives in the parameters rather than in the training data.
 
-## Contributing
-Contributions are welcome! Please open issues or pull requests for bug fixes, improvements, or new features. For major changes, please open an issue first to discuss what you would like to change.
+## ⚠️ Limitations
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+Being upfront about scope makes the result easier to trust:
 
-## Acknowledgements
+- Experiments use **CNNs trained on CIFAR-10**. Results may not carry over to other architectures or datasets without retraining.
+- The **97%** figure is the best result across the tested embedding rates; accuracy varies with the rate.
+- Detection assumes a **specific embedding style**. A different hiding technique may need new data.
+- This is a **research prototype**, not a production scanner.
+
+## ❓ FAQ
+
+**Why a graph neural network?**
+A GAT learns which relationships between parts of the input matter most through its attention weights, which suits structured data better than treating every feature independently.
+
+**Does tampering hurt the model's normal accuracy?**
+That is the point of the attack: payloads are hidden so the model keeps working. It is why looking at accuracy alone does not reveal tampering.
+
+**Can I use my own models?**
+Yes, in principle. Extract the same 22 features from your weights and evaluate them with a trained detector, keeping the limitations above in mind.
+
+## 🗺️ Roadmap
+
+- [x] CNN population on CIFAR-10
+- [x] Payload injection at varying embedding rates
+- [x] 22 byte-level statistical features
+- [x] GAT detector reaching up to 97% accuracy
+- [ ] Evaluate on other architectures and datasets
+- [ ] Test against additional embedding techniques
+- [ ] Publish a pinned `requirements.txt` and pretrained detector weights
+
+## 🤝 Contributing
+
+Issues and pull requests are welcome. For larger changes, please open an issue first to discuss the idea.
+
+## 🙏 Acknowledgements
+
 - [PyTorch](https://pytorch.org/)
-- [CIFAR-10 Dataset](https://www.cs.toronto.edu/~kriz/cifar.html)
-- [Graph Attention Networks (GAT)](https://arxiv.org/abs/1710.10903)
-- All contributors and open-source libraries used in this project.
+- [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html)
+- [Graph Attention Networks](https://arxiv.org/abs/1710.10903) (Veličković et al.)
 
-## Contact
-For questions, suggestions, or support, please contact [Yug Rokadia](mailto:yugrokadia@gmail.com).
+## 📄 License
 
+Released under the [MIT License](LICENSE). Copyright (c) 2026 Yug Rokadia.
 
-## Example Results
-
-<p align="center">
-  <img src="image.png" alt="Training and validation accuracy curves" width="400"/>
-  <br><em>Training and validation accuracy curves</em>
-</p>
-<p align="center">
-  <img src="image-1.png" alt="Confusion matrix for model predictions" width="400"/>
-  <br><em>Confusion matrix for model predictions</em>
-</p>
-<p align="center">
-  <img src="image-2.png" alt="ROC curve for steganographic payload detection" width="400"/>
-  <br><em>ROC curve for steganographic payload detection</em>
-</p>
-<p align="center">
-  <img src="image-3.png" alt="Sample tampered vs. untampered images" width="400"/>
-  <br><em>Sample tampered vs. untampered images</em>
-</p>
-<p align="center">
-  <img src="image-4.png" alt="Feature visualization of learned representations" width="400"/>
-  <br><em>Feature visualization of learned representations</em>
-</p>
+<p align="center"><sub>Because a model that works is not the same as a model you can trust. 🛡️</sub></p>
