@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="1000" height="300" role="img" aria-labelledby="t d">
+  <title id="t">How the dataset is built</title>
+  <desc id="d">Each of 60 plus trained CNNs is kept clean or has a payload injected into its weights at a chosen embedding rate; the labelled set feeds 22 byte-level statistical features.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#120b24"/><stop offset="1" stop-color="#241447"/></linearGradient><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c4b5fd"/></marker></defs>
+  <style>
+    .t{font-family:'Segoe UI',-apple-system,'Helvetica Neue',Arial,sans-serif}
+    .m{font-family:SFMono-Regular,Consolas,Menlo,'DejaVu Sans Mono',monospace}
+    @keyframes flow{to{stroke-dashoffset:-24}}
+    .fl{stroke-dasharray:6 6;animation:flow 1s linear infinite}
+    @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+    .pu{animation:pulse 2.4s ease-in-out infinite}.p2{animation-delay:-.8s}.p3{animation-delay:-1.6s}
+    @media (prefers-reduced-motion:reduce){.fl,.pu{animation:none;opacity:1}}
+  </style>
+  <rect width="1000" height="300" rx="22" fill="url(#bg)"/>
+  <text class="t" x="40" y="46" font-size="13" font-weight="600" letter-spacing="3" fill="#c4b5fd">BUILDING THE DATASET</text>
+  <g class="t" text-anchor="middle">
+    <rect x="40" y="105" width="190" height="100" rx="14" fill="#1c1138" stroke="#a78bfa" stroke-opacity=".7"/>
+    <text x="135" y="146" font-size="18" font-weight="700" fill="#f1eaff">60+ CNNs</text>
+    <text x="135" y="170" font-size="13" fill="#b9a9d9">trained on CIFAR-10</text>
+
+    <rect x="330" y="68" width="250" height="74" rx="14" fill="#1c1138" stroke="#34d399" stroke-opacity=".7"/>
+    <text x="455" y="100" font-size="16" font-weight="700" fill="#6ee7b7">Clean models</text>
+    <text x="455" y="122" font-size="13" fill="#b9a9d9">weights left untouched</text>
+
+    <rect x="330" y="168" width="250" height="74" rx="14" fill="#1c1138" stroke="#f472b6" stroke-opacity=".8"/>
+    <text x="455" y="200" font-size="16" font-weight="700" fill="#fbcfe8">Tampered models</text>
+    <text x="455" y="222" font-size="13" fill="#b9a9d9">payload injected into weights</text>
+
+    <rect x="680" y="105" width="280" height="100" rx="14" fill="#1c1138" stroke="#fbbf24" stroke-opacity=".7"/>
+    <text x="820" y="140" font-size="16" font-weight="700" fill="#fde68a">22 byte-level features</text>
+    <text x="820" y="164" font-size="13" fill="#b9a9d9">statistics over each model's weights</text>
+    <text x="820" y="184" font-size="13" fill="#b9a9d9">labelled clean / tampered</text>
+  </g>
+  <g stroke="#c4b5fd" stroke-width="2" fill="none" marker-end="url(#ah)">
+    <path class="fl" d="M232 140 C 280 140, 285 105, 326 105"/>
+    <path class="fl" d="M232 170 C 280 170, 285 205, 326 205"/>
+    <path class="fl" d="M582 105 C 630 105, 635 140, 676 150"/>
+    <path class="fl" d="M582 205 C 630 205, 635 170, 676 160"/>
+  </g>
+  <g class="t" text-anchor="middle">
+    <rect x="360" y="256" width="190" height="26" rx="13" fill="#f472b6" fill-opacity=".12" stroke="#f472b6" stroke-opacity=".5"/>
+    <text x="455" y="274" font-size="12.5" font-weight="600" fill="#fbcfe8">varying embedding rates</text>
+  </g>
+</svg>
