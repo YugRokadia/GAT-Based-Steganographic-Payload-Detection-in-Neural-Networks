@@ -152,25 +152,26 @@ python cnn_copy.py --eval --weights cnn_seed_1357_full_tampered.pth
 
 ### Example Results
 
-<p align="center">
-  <img src="assets/accuracy.svg" alt="Training and test accuracy curves" width="100%"><br>
-  <em>Training and test accuracy over 30 epochs</em>
-</p>
-
-<p align="center">
-  <img src="assets/confusion_matrix.svg" alt="Confusion matrix" width="60%"><br>
-  <em>Confusion matrix: 76 clean and 31 tampered correctly classified, 12 false positives, 1 false negative</em>
-</p>
-
-<p align="center">
-  <img src="assets/roc_curve.svg" alt="ROC curve" width="60%"><br>
-  <em>ROC curve for steganographic payload detection (AUC = 0.979)</em>
-</p>
-
-<p align="center">
-  <img src="assets/f1_embedding_rate.svg" alt="F1-score vs embedding rate" width="100%"><br>
-  <em>F1-score vs. embedding rate, peaking at 0.8525 at a 7% embedding rate</em>
-</p>
+<table>
+  <tr>
+    <td align="center" width="25%">
+      <img src="assets/accuracy.svg" alt="Training and test accuracy curves" width="100%"><br>
+      <sub><b>Accuracy</b><br>Train vs. test, 30 epochs</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="assets/confusion_matrix.svg" alt="Confusion matrix" width="100%"><br>
+      <sub><b>Confusion Matrix</b><br>76 / 12 / 1 / 31</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="assets/roc_curve.svg" alt="ROC curve" width="100%"><br>
+      <sub><b>ROC Curve</b><br>AUC = 0.979</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="assets/f1_embedding_rate.svg" alt="F1-score vs embedding rate" width="100%"><br>
+      <sub><b>F1 vs. Embedding Rate</b><br>Peak 0.8525 at 7%</sub>
+    </td>
+  </tr>
+</table>
 
 ## Contributing
 
